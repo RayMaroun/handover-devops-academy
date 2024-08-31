@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Library Management System</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<nav>
+    <ul>
+        <li><a th:href="@{/}">Home</a></li>
+        <li><a th:href="@{/books}">Books</a></li>
+        <li><a th:href="@{/authors}">Authors</a></li>
+    </ul>
+    <ul>
+        <li><form th:action="@{/logout}" method="post"><button type="submit">Logout</button></form></li>
+    </ul>
+</nav>
+<div class="container">
+    <h1>Welcome to the Library Management System</h1>
+</div>
+</body>
+</html>

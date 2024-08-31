@@ -1,0 +1,193 @@
+/* src/main/resources/static/css/styles.css */
+
+body {
+    font-family: 'Tahoma', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #fafafa;
+}
+
+nav {
+    background-color: #004d40;
+    color: #e0f7fa;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+}
+
+nav ul li {
+    display: inline;
+    margin-right: 15px;
+}
+
+nav ul li a {
+    color: #004d40;
+    text-decoration: none;
+    font-weight: bolder;
+}
+
+nav ul li form {
+    display: inline;
+}
+
+nav ul li button {
+    background: none;
+    border: none;
+    color: #004d40;
+    font-weight: bolder;
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+    text-decoration: none;
+    font-family: 'Tahoma', sans-serif;
+    font-size: 16px;
+}
+
+nav ul li button:hover {
+    color: #b2dfdb;
+}
+
+.container {
+    padding: 30px;
+}
+
+h1, h2 {
+    color: #004d40;
+}
+
+form {
+    margin-bottom: 30px;
+}
+
+input, select {
+    margin-right: 15px;
+    padding: 8px;
+    border: 2px solid #004d40;
+    border-radius: 4px;
+}
+
+button {
+    margin-left: 15px;
+    padding: 8px 15px;
+    background-color: #004d40;
+    color: #e0f7fa;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #00695c;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    margin: 10px 0;
+    background-color: #ffffff;
+    padding: 15px;
+    border: 1px solid #b2dfdb;
+    border-radius: 4px;
+}
+
+.error-message {
+    color: #d32f2f;
+    font-weight: bold;
+    margin-bottom: 30px;
+}
+
+/* Style for login and register pages */
+
+.center-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.login-container, .register-container {
+    max-width: 450px;
+    margin: 0 auto;
+    padding: 30px;
+    background-color: #ffffff;
+    border: 1px solid #b2dfdb;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    animation: fade-in 0.6s ease-out;
+}
+
+.login-container h1, .register-container h1 {
+    text-align: center;
+    color: #004d40;
+    margin-bottom: 30px;
+}
+
+.login-container form, .register-container form {
+    display: flex;
+    flex-direction: column;
+}
+
+.login-container input, .register-container input {
+    margin-bottom: 15px;
+    padding: 12px;
+    font-size: 16px;
+    border: 2px solid #004d40;
+    border-radius: 4px;
+}
+
+.login-container input:focus, .register-container input:focus {
+    border-color: #00695c;
+    outline: none;
+    box-shadow: 0 0 6px rgba(0, 105, 92, 0.2);
+}
+
+.login-container button, .register-container button {
+    padding: 12px;
+    font-size: 16px;
+    background-color: #004d40;
+    color: #e0f7fa;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.login-container button:hover, .register-container button:hover {
+    background-color: #00695c;
+}
+
+.login-container p, .register-container p {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.login-container p a, .register-container p a {
+    color: #004d40;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+.login-container p a:hover, .register-container p a:hover {
+    color: #00695c;
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Books - Library Management System</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchBooks();
+
+            document.getElementById('addBookForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+                addBook();
+            });
+
+            document.getElementById('searchBookForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+                searchBooks();
+            });
+        });
+
+        function fetchBooks() {
+            fetch('/api/books')
+                .then(response => response.json())
+                .then(books => {
+                    const bookList = document.getElementById('bookList');
+                    bookList.innerHTML = '';
+                    books.forEach(book => {
+                        const li = document.createElement('li');
+                        li.textContent = `${book.title} by ${book.author.name}`;
+                        const deleteButton = document.createElement('button');
+                        deleteButton.textContent = 'Delete';
+                        deleteButton.onclick = () => deleteBook(book.id);
+                        li.appendChild(deleteButton);
+                        bookList.appendChild(li);
+                    });
+                });
+        }
+
+        function addBook() {
+            const title = document.getElementById('title').value;
+            const authorId = document.getElementById('authorId').value;
+            const isbn = document.getElementById('isbn').value;
+
+            fetch('/api/books', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ title, author: { id: authorId }, isbn})
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(data => { throw new Error(data.message); });
+                }
+                return response.json();
+            })
+            .then(() => {
+                fetchBooks();
+                document.getElementById('addBookForm').reset();
+            })
+            .catch(error => alert('Error: ' + error.message));
+        }
+
+        function deleteBook(id) {
+            fetch(`/api/books/${id}`, {
+                method: 'DELETE'
+            }).then(() => fetchBooks());
+        }
+
+        function searchBooks() {
+            const title = document.getElementById('searchTitle').value;
+            fetch(`/api/books/search?title=${title}`)
+                .then(response => response.json())
+                .then(books => {
+                    const bookList = document.getElementById('bookList');
+                    bookList.innerHTML = '';
+                    books.forEach(book => {
+                        const li = document.createElement('li');
+                        li.textContent = `${book.title} by ${book.author.name}`;
+                        const deleteButton = document.createElement('button');
+                        deleteButton.textContent = 'Delete';
+                        deleteButton.onclick = () => deleteBook(book.id);
+                        li.appendChild(deleteButton);
+                        bookList.appendChild(li);
+                    });
+                });
+        }
+    </script>
+</head>
+<body>
+<nav>
+    <ul>
+        <li><a th:href="@{/}">Home</a></li>
+        <li><a th:href="@{/books}">Books</a></li>
+        <li><a th:href="@{/authors}">Authors</a></li>
+    </ul>
+    <ul>
+        <li>
+            <form th:action="@{/logout}" method="post">
+                <button type="submit">Logout</button>
+            </form>
+        </li>
+    </ul>
+</nav>
+<div class="container">
+    <h1>Books</h1>
+    <form id="addBookForm">
+        <input type="text" id="title" placeholder="Title" required>
+        <select id="authorId" required>
+            <option th:each="author : ${authors}" th:value="${author.id}" th:text="${author.name}">Author</option>
+        </select>
+        <input type="text" id="isbn" placeholder="ISBN" required>
+        <button type="submit">Add Book</button>
+    </form>
+    <h2>Search Books</h2>
+    <form id="searchBookForm">
+        <input type="text" id="searchTitle" placeholder="Search by Title">
+        <button type="submit">Search</button>
+    </form>
+    <ul id="bookList"></ul>
+</div>
+</body>
+</html>

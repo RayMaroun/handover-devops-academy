@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Customers - Bank Management System</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchCustomers();
+
+            document.getElementById('addCustomerForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+                addCustomer();
+            });
+
+            document.getElementById('searchCustomerForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+                searchCustomers();
+            });
+        });
+
+        function fetchCustomers() {
+            fetch('/api/customers')
+                .then(response => response.json())
+                .then(customers => {
+                    const customerList = document.getElementById('customerList');
+                    customerList.innerHTML = '';
+                    customers.forEach(customer => {
+                        const li = document.createElement('li');
+                        li.textContent = customer.name;
+                        const deleteButton = document.createElement('button');
+                        deleteButton.textContent = 'Delete';
+                        deleteButton.onclick = () => deleteCustomer(customer.id);
+                        li.appendChild(deleteButton);
+                        customerList.appendChild(li);
+                    });
+                });
+        }
+
+        function addCustomer() {
+            const name = document.getElementById('name').value;
+
+            fetch('/api/customers', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(data => { throw new Error(data.message); });
+                }
+                return response.json();
+            })
+            .then(() => {
+                fetchCustomers();
+                document.getElementById('addCustomerForm').reset();
+            })
+            .catch(error => alert('Error: ' + error.message));
+        }
+
+        function deleteCustomer(id) {
+            fetch(`/api/customers/${id}`, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(json => {
+                        if (json.message) {
+                            throw new Error(json.message); // Use the user-friendly message
+                        } else {
+                            throw new Error('An unexpected error occurred');
+                        }
+                    });
+                }
+                return;
+            })
+            .then(() => fetchCustomers())
+            .catch(error => alert('Error: ' + error.message));
+        }
+
+        function searchCustomers() {
+            const name = document.getElementById('searchName').value;
+            fetch(`/api/customers/search?name=${name}`)
+                .then(response => response.json())
+                .then(customers => {
+                    const customerList = document.getElementById('customerList');
+                    customerList.innerHTML = '';
+                    customers.forEach(customer => {
+                        const li = document.createElement('li');
+                        li.textContent = customer.name;
+                        const deleteButton = document.createElement('button');
+                        deleteButton.textContent = 'Delete';
+                        deleteButton.onclick = () => deleteCustomer(customer.id);
+                        li.appendChild(deleteButton);
+                        customerList.appendChild(li);
+                    });
+                });
+        }
+    </script>
+</head>
+<body>
+<nav>
+    <ul>
+        <li><a th:href="@{/}">Home</a></li>
+        <li><a th:href="@{/accounts}">Accounts</a></li>
+        <li><a th:href="@{/customers}">Customers</a></li>
+    </ul>
+    <ul>
+        <li>
+            <form th:action="@{/logout}" method="post">
+                <button type="submit">Logout</button>
+            </form>
+        </li>
+    </ul>
+</nav>
+<div class="container">
+    <h1>Customers</h1>
+    <form id="addCustomerForm">
+        <input type="text" id="name" placeholder="Name" required>
+        <button type="submit">Add Customer</button>
+    </form>
+    <h2>Search Customers</h2>
+    <form id="searchCustomerForm">
+        <input type="text" id="searchName" placeholder="Search by Name">
+        <button type="submit">Search</button>
+    </form>
+    <ul id="customerList"></ul>
+</div>
+</body>
+</html>

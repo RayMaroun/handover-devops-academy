@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Accounts - Bank Management System</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchAccounts();
+
+            document.getElementById('addAccountForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+                addAccount();
+            });
+
+            document.getElementById('searchAccountForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+                searchAccounts();
+            });
+        });
+
+        function fetchAccounts() {
+            fetch('/api/accounts')
+                .then(response => response.json())
+                .then(accounts => {
+                    const accountList = document.getElementById('accountList');
+                    accountList.innerHTML = '';
+                    accounts.forEach(account => {
+                        const li = document.createElement('li');
+                        li.textContent = `${account.accountNumber} - ${account.accountType} - Balance: ${account.balance}`;
+                        const deleteButton = document.createElement('button');
+                        deleteButton.textContent = 'Delete';
+                        deleteButton.onclick = () => deleteAccount(account.id);
+                        li.appendChild(deleteButton);
+                        accountList.appendChild(li);
+                    });
+                });
+        }
+
+        function addAccount() {
+            const accountNumber = document.getElementById('accountNumber').value;
+            const accountType = document.getElementById('accountType').value;
+            const balance = document.getElementById('balance').value;
+            const customerId = document.getElementById('customerId').value;
+
+            fetch('/api/accounts', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ accountNumber, accountType, balance, customer: { id: customerId } })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(data => { throw new Error(data.message); });
+                }
+                return response.json();
+            })
+            .then(() => {
+                fetchAccounts();
+                document.getElementById('addAccountForm').reset();
+            })
+            .catch(error => alert('Error: ' + error.message));
+        }
+
+        function deleteAccount(id) {
+            fetch(`/api/accounts/${id}`, {
+                method: 'DELETE'
+            }).then(() => fetchAccounts());
+        }
+
+        function searchAccounts() {
+            const accountNumber = document.getElementById('searchAccountNumber').value;
+            fetch(`/api/accounts/search?accountNumber=${accountNumber}`)
+                .then(response => response.json())
+                .then(accounts => {
+                    const accountList = document.getElementById('accountList');
+                    accountList.innerHTML = '';
+                    accounts.forEach(account => {
+                        const li = document.createElement('li');
+                        li.textContent = `${account.accountNumber} - ${account.accountType} - Balance: ${account.balance}`;
+                        const deleteButton = document.createElement('button');
+                        deleteButton.textContent = 'Delete';
+                        deleteButton.onclick = () => deleteAccount(account.id);
+                        li.appendChild(deleteButton);
+                        accountList.appendChild(li);
+                    });
+                });
+        }
+    </script>
+</head>
+<body>
+<nav>
+    <ul>
+        <li><a th:href="@{/}">Home</a></li>
+        <li><a th:href="@{/accounts}">Accounts</a></li>
+        <li><a th:href="@{/customers}">Customers</a></li>
+    </ul>
+    <ul>
+        <li>
+            <form th:action="@{/logout}" method="post">
+                <button type="submit">Logout</button>
+            </form>
+        </li>
+    </ul>
+</nav>
+<div class="container">
+    <h1>Accounts</h1>
+    <form id="addAccountForm">
+        <input type="text" id="accountNumber" placeholder="Account Number" required>
+        <select id="accountType" required>
+            <option value="SAVINGS">Savings</option>
+            <option value="CURRENT">Current</option>
+            <option value="FIXED">Fixed Deposit</option>
+        </select>
+        <input type="number" id="balance" placeholder="Balance" required>
+        <select id="customerId" required>
+            <option th:each="customer : ${customers}" th:value="${customer.id}" th:text="${customer.name}">Customer</option>
+        </select>
+        <button type="submit">Add Account</button>
+    </form>
+    <h2>Search Accounts</h2>
+    <form id="searchAccountForm">
+        <input type="text" id="searchAccountNumber" placeholder="Search by Account Number">
+        <button type="submit">Search</button>
+    </form>
+    <ul id="accountList"></ul>
+</div>
+</body>
+</html>

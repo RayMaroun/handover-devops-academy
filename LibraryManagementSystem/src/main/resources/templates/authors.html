@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Authors - Library Management System</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchAuthors();
+
+            document.getElementById('addAuthorForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+                addAuthor();
+            });
+
+            document.getElementById('searchAuthorForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+                searchAuthors();
+            });
+        });
+
+        function fetchAuthors() {
+            fetch('/api/authors')
+                .then(response => response.json())
+                .then(authors => {
+                    const authorList = document.getElementById('authorList');
+                    authorList.innerHTML = '';
+                    authors.forEach(author => {
+                        const li = document.createElement('li');
+                        li.textContent = author.name;
+                        const deleteButton = document.createElement('button');
+                        deleteButton.textContent = 'Delete';
+                        deleteButton.onclick = () => deleteAuthor(author.id);
+                        li.appendChild(deleteButton);
+                        authorList.appendChild(li);
+                    });
+                });
+        }
+
+        function addAuthor() {
+            const name = document.getElementById('name').value;
+
+            fetch('/api/authors', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(data => { throw new Error(data.message); });
+                }
+                return response.json();
+            })
+            .then(() => {
+                fetchAuthors();
+                document.getElementById('addAuthorForm').reset();
+            })
+            .catch(error => alert('Error: ' + error.message));
+        }
+
+        function deleteAuthor(id) {
+            fetch(`/api/authors/${id}`, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(json => {
+                        if (json.message) {
+                            throw new Error(json.message); // Use the user-friendly message
+                        } else {
+                            throw new Error('An unexpected error occurred');
+                        }
+                    });
+                }
+                return;
+            })
+            .then(() => fetchAuthors())
+            .catch(error => alert('Error: ' + error.message));
+        }
+
+        function searchAuthors() {
+            const name = document.getElementById('searchName').value;
+            fetch(`/api/authors/search?name=${name}`)
+                .then(response => response.json())
+                .then(authors => {
+                    const authorList = document.getElementById('authorList');
+                    authorList.innerHTML = '';
+                    authors.forEach(author => {
+                        const li = document.createElement('li');
+                        li.textContent = author.name;
+                        const deleteButton = document.createElement('button');
+                        deleteButton.textContent = 'Delete';
+                        deleteButton.onclick = () => deleteAuthor(author.id);
+                        li.appendChild(deleteButton);
+                        authorList.appendChild(li);
+                    });
+                });
+        }
+    </script>
+</head>
+<body>
+<nav>
+    <ul>
+        <li><a th:href="@{/}">Home</a></li>
+        <li><a th:href="@{/books}">Books</a></li>
+        <li><a th:href="@{/authors}">Authors</a></li>
+    </ul>
+    <ul>
+        <li>
+            <form th:action="@{/logout}" method="post">
+                <button type="submit">Logout</button>
+            </form>
+        </li>
+    </ul>
+</nav>
+<div class="container">
+    <h1>Authors</h1>
+    <form id="addAuthorForm">
+        <input type="text" id="name" placeholder="Name" required>
+        <button type="submit">Add Author</button>
+    </form>
+    <h2>Search Authors</h2>
+    <form id="searchAuthorForm">
+        <input type="text" id="searchName" placeholder="Search by Name">
+        <button type="submit">Search</button>
+    </form>
+    <ul id="authorList"></ul>
+</div>
+</body>
+</html>
