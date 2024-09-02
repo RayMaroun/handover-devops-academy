@@ -23,10 +23,9 @@ The content for this DevOps Academy was originally created on GitBook and has be
 - **Resource Linking**: All necessary resources, such as images, scripts, and reference materials, are linked directly within the Markdown files.
 - **Re-importing to GitBook**: If needed, the Markdown content can be re-imported into GitBook, enabling easy updates or republishing.
 
-### Access Instructions
+### Course Published Version
 
-- **GitHub Repository URL**: [Provide the URL here]
-- **Access Requirements**: Ensure you have the necessary permissions to access the repository. If any credentials or SSH keys are required, they will be provided separately.
+- **Course URL**: [DevOps Academy](https://devray.gitbook.io/devops-academy)
 
 ### Project Attachments
 
